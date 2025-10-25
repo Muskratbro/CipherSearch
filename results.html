@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cipher Search – Results</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background-color: #0a0a0f;
+      color: #e0e0ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      background-image: radial-gradient(circle at center, #141420 0%, #050507 100%);
+    }
+
+    h1 {
+      color: #00ffe5;
+      text-shadow: 0 0 12px #00ffe5;
+      margin-top: 20px;
+    }
+
+    form {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      background: #1a1a25;
+      color: #00ffe5;
+      width: 300px;
+      outline: none;
+      box-shadow: 0 0 8px #00ffe5 inset;
+    }
+
+    button {
+      background: #00ffe5;
+      border: none;
+      border-radius: 8px;
+      color: #0a0a0f;
+      font-weight: bold;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: #00c8b8;
+      box-shadow: 0 0 10px #00ffe5;
+    }
+
+    #results {
+      width: 90%;
+      max-width: 800px;
+      margin-top: 30px;
+    }
+
+    .result {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 16px;
+      margin-bottom: 16px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00ffe520;
+      transition: background 0.3s;
+    }
+
+    .result:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .result a {
+      color: #00ffe5;
+      text-decoration: none;
+      font-size: 1.1em;
+    }
+
+    .result p {
+      color: #b0b0c0;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Cipher Search</h1>
+  <form id="searchForm">
+    <input type="text" id="query" placeholder="Enter your search..." required>
+    <button type="submit">Search</button>
+  </form>
+  <div id="results"></div>
+
+  <script>
+    const workerURL = "https://soft-rain-235f.younglin90.workers.dev/";
+    const proxyURL = "https://not-a-proxy.younglin90.workers.dev/?url=";
+
+    const form = document.getElementById("searchForm");
+    const resultsDiv = document.getElementById("results");
+    const queryInput = document.getElementById("query");
+
+    // Handle form submit
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const query = queryInput.value.trim();
+      if (!query) return;
+
+      resultsDiv.innerHTML = `<p>Searching "${query}"...</p>`;
+      try {
+        const res = await fetch(`${workerURL}/?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        if (!data.organic) {
+          resultsDiv.innerHTML = "<p>No results found.</p>";
+          return;
+        }
+
+        resultsDiv.innerHTML = data.organic.map(r => `
+          <div class="result">
+            <a href="#" onclick="openProxy('${r.link}')">${r.title}</a>
+            <p>${r.snippet || ''}</p>
+            <p><small>${r.link}</small></p>
+          </div>
+        `).join("");
+      } catch (err) {
+        resultsDiv.innerHTML = `<p>Error: ${err.message}</p>`;
+      }
+    });
+
+    function openProxy(url) {
+      const win = window.open();
+      win.document.write(`
+        <html><body style="margin:0;overflow:hidden;background:#000">
+          <object data="${proxyURL + encodeURIComponent(url)}" style="width:100%;height:100vh;border:none;"></object>
+        </body></html>
+      `);
+    }
+
+    // Auto-run if ?q= is in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const q = urlParams.get("q");
+    if (q) {
+      queryInput.value = q;
+      form.dispatchEvent(new Event("submit"));
+    }
+  </script>
+</body>
+</html>
