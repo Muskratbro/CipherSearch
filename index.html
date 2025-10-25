@@ -123,57 +123,7 @@
         // Open with your proxy in a new tab using <object> data
         const proxyUrl = `https://not-a-proxy.younglin90.workers.dev/?url=${encodeURIComponent(query)}`;
         const win = window.open("about:blank", "_blank");
-        win.document.write(`<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Cipher Search Proxy</title>
-<style>
-  html, body { margin:0; padding:0; height:100%; background:#0d0d0d; color:#fff; font-family: 'Segoe UI', sans-serif; }
-  #loader { position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:1.5em; }
-  object { width:100%; height:100%; border:none; }
-</style>
-</head>
-<body>
-<div id="loader">Loading...</div>
-<object id="proxyObj" data="" type="text/html"></object>
-
-<script>
-(function(){
-  const urlParams = new URLSearchParams(window.location.search);
-  const target = urlParams.get('url');
-  const proxyBase = '${proxyUrl}'; // your worker URL
-
-  const obj = document.getElementById('proxyObj');
-  if(target){
-    obj.data = proxyBase + encodeURIComponent(target);
-  }
-
-  // Remove loader when object loads
-  obj.addEventListener('load', ()=>{ document.getElementById('loader').style.display='none'; });
-
-  // Keep clicks inside the proxy
-  obj.addEventListener('load', ()=>{
-    try {
-      const objDoc = obj.contentDocument || obj.contentWindow.document;
-      objDoc.addEventListener('click', e=>{
-        let a = e.target.closest('a');
-        if(a && a.href){
-          e.preventDefault();
-          const newUrl = proxyBase + encodeURIComponent(a.href);
-          obj.data = newUrl;
-        }
-      });
-    } catch(err){
-      // Cross-origin content may throw; best-effort only
-      console.warn('Link interception failed (likely cross-origin)', err);
-    }
-  });
-})();
-</script>
-</body>
-</html>
-`);
+        win.document.write(`<object data="${proxyUrl}" height="100%" width="100%"></object>`);
       } else {
         // Otherwise treat it as a search query
         window.location.href = `results.html?q=${encodeURIComponent(query)}`;
