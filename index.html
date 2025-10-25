@@ -116,16 +116,7 @@
 
       if (!query) return;
 
-      // If input looks like a URL (starts with http or www)
-      if (/^https?:\/\//i.test(query) || /^www\./i.test(query)) {
-        // Add protocol if missing
-        if (!/^https?:\/\//i.test(query)) query = "https://" + query;
-        // Open with your proxy in a new tab using <object> data
-        const proxyUrl = `https://not-a-proxy.younglin90.workers.dev/?url=${encodeURIComponent(query)}`;
-        const win = window.open("about:blank", "_blank");
-        win.document.write(`<object data="${proxyUrl}" height="100%" width="100%"></object>`);
-      } else {
-        // Otherwise treat it as a search query
+     
         window.location.href = `results.html?q=${encodeURIComponent(query)}`;
       }
     });
