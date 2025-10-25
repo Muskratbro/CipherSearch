@@ -81,12 +81,28 @@
       color: #00ffe5;
       text-decoration: none;
       font-size: 1.1em;
+      cursor: pointer;
     }
 
     .result p {
       color: #b0b0c0;
       font-size: 0.9em;
     }
+
+    #proxyContainer {
+      width: 100%;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      display: none;
+    }
+
+    #proxyContainer embed {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
   </style>
 </head>
 <body>
@@ -95,7 +111,11 @@
     <input type="text" id="query" placeholder="Enter your search..." required>
     <button type="submit">Search</button>
   </form>
+
   <div id="results"></div>
+  <div id="proxyContainer">
+    <embed id="proxyEmbed" src="">
+  </div>
 
   <script>
     const workerURL = "https://soft-rain-235f.younglin90.workers.dev/";
@@ -104,6 +124,8 @@
     const form = document.getElementById("searchForm");
     const resultsDiv = document.getElementById("results");
     const queryInput = document.getElementById("query");
+    const proxyContainer = document.getElementById("proxyContainer");
+    const proxyEmbed = document.getElementById("proxyEmbed");
 
     // Handle form submit
     form.addEventListener("submit", async (e) => {
@@ -123,7 +145,7 @@
 
         resultsDiv.innerHTML = data.organic.map(r => `
           <div class="result">
-            <a href="#" onclick="openProxy('${r.link}')">${r.title}</a>
+            <a onclick="openProxy('${r.link}')">${r.title}</a>
             <p>${r.snippet || ''}</p>
             <p><small>${r.link}</small></p>
           </div>
@@ -134,12 +156,10 @@
     });
 
     function openProxy(url) {
-      const win = window.open();
-      win.document.write(`
-        <html><body style="margin:0;overflow:hidden;background:#000">
-          <object data="${proxyURL + encodeURIComponent(url)}" style="width:100%;height:100vh;border:none;"></object>
-        </body></html>
-      `);
+      proxyEmbed.src = proxyURL + encodeURIComponent(url);
+      resultsDiv.style.display = "none";
+      form.style.display = "none";
+      proxyContainer.style.display = "block";
     }
 
     // Auto-run if ?q= is in URL
