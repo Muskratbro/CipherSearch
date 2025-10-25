@@ -123,7 +123,7 @@
         // Open with your proxy in a new tab using <object> data
         const proxyUrl = `https://not-a-proxy.younglin90.workers.dev/?url=${encodeURIComponent(query)}`;
         const win = window.open("about:blank", "_blank");
-        win.document.write(`<object data="${proxyUrl}" style="width:100vw;height:100vh;border:none;"></object>`);
+        win.document.write(`<embed src"${proxyUrl}" style="width:100vw;height:100vh;border:none;">`);
       } else {
         // Otherwise treat it as a search query
         window.location.href = `results.html?q=${encodeURIComponent(query)}`;
