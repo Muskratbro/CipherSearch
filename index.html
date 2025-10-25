@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cipher Search</title>
+<style>
+  :root{
+    --bg:#0b0f14;
+    --panel:#091018;
+    --card:#0f1720;
+    --muted:#9aa6b2;
+    --accent:#6ee7b7;
+    --accent-2:#60a5fa;
+    --glass: rgba(255,255,255,0.03);
+    --radius:14px;
+    --glass-border: rgba(255,255,255,0.04);
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color: #e6f0f6;background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(96,165,250,0.06), transparent 10%),
+    radial-gradient(900px 500px at 90% 90%, rgba(110,231,183,0.03), transparent 10%),
+    var(--bg);
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+
+  header {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:18px 28px;
+    backdrop-filter: blur(6px);
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .logo {
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .logo .mark{
+    width:48px;height:48px;border-radius:10px;
+    background: linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow: 0 6px 20px rgba(32,41,52,0.6), inset 0 -6px 18px rgba(255,255,255,0.03);
+    display:grid;place-items:center;color:#042027;font-weight:700;font-size:18px;
+    transform: rotate(-12deg);
+  }
+  .logo .title {
+    line-height:1;
+  }
+  .logo .title h1{margin:0;font-size:18px;letter-spacing:0.3px}
+  .logo .title p{margin:0;font-size:12px;color:var(--muted)}
+
+  .container{
+    max-width:980px;margin:48px auto;padding:28px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.008));
+    border-radius: var(--radius);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 10px 40px rgba(2,6,23,0.6);
+  }
+
+  .search-wrap{
+    display:flex;flex-direction:column;gap:18px;padding:28px;
+  }
+  .hero {
+    display:flex;align-items:center;gap:20px;
+  }
+  .hero .brand {
+    flex:1;
+  }
+  .hero h2{font-size:34px;margin:0}
+  .hero p{margin:6px 0 0;color:var(--muted)}
+
+  form.search {
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+  }
+
+  .input {
+    position:relative;
+    flex:1;
+    display:flex;align-items:center;
+    background:var(--glass);
+    border-radius:12px;padding:8px 12px;
+    border:1px solid var(--glass-border);
+  }
+  .input input{
+    width:100%;background:transparent;border:0;outline:0;padding:12px 8px;color:inherit;font-size:16px;
+  }
+  .input .hint{font-size:13px;color:var(--muted);padding-left:8px}
+
+  button.search-btn{
+    background:linear-gradient(180deg,var(--accent),var(--accent-2));
+    color:#032225;border:0;padding:10px 16px;border-radius:10px;font-weight:700;cursor:pointer;
+    box-shadow: 0 8px 20px rgba(32,41,52,0.45);
+    transition:transform .14s ease, box-shadow .14s ease;
+  }
+  button.search-btn:hover{transform:translateY(-2px)}
+  button.icon-btn{
+    background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px;border-radius:10px;cursor:pointer;
+  }
+
+  .tools{display:flex;gap:8px;align-items:center}
+  .server-select{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px;border-radius:10px}
+
+  .results {
+    margin-top:18px;padding:16px;border-radius:10px;background: linear-gradient(180deg, rgba(255,255,255,0.005), transparent);
+    border:1px solid rgba(255,255,255,0.02);
+  }
+  .result-item{padding:12px;border-bottom:1px dashed rgba(255,255,255,0.02)}
+  .result-item:last-child{border-bottom:none}
+  .result-item h3{margin:0 0 6px;font-size:16px}
+  .result-item p{margin:0;color:var(--muted);font-size:13px}
+
+  .mini {
+    display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px;
+  }
+
+  footer {
+    margin-top:18px;padding:12px;color:var(--muted);font-size:13px;text-align:center;
+  }
+
+  /* responsive */
+  @media (max-width:720px){
+    .hero h2{font-size:22px}
+    .container{margin:18px;padding:18px}
+    header{padding:10px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="mark">CS</div>
+    <div class="title">
+      <h1>Cipher Search</h1>
+      <p>Private • Minimal • Fast</p>
+    </div>
+  </div>
+
+  <nav style="margin-left:auto" aria-label="top nav">
+    <button class="icon-btn" title="About" onclick="alert('Cipher Search — built by you. Fast, private, and experimental.')">About</button>
+    <select id="serverSelect" class="server-select" title="Choose proxy server" onchange="onServerChange(this)">
+      <option value="">Direct</option>
+      <option value="https://not-a-proxy.yourname.workers.dev">server1</option>
+      <option value="https://not-a-proxy-2.yourname.workers.dev">server2</option>
+    </select>
+  </nav>
+</header>
+
+<main class="container" role="main">
+  <div class="search-wrap">
+    <div class="hero">
+      <div class="brand">
+        <h2>Search the web — privately.</h2>
+        <p>Type a query or paste a URL. Cipher Search routes requests through your configured proxy when selected.</p>
+      </div>
+    </div>
+
+    <form class="search" id="searchForm" action="/results" method="GET" onsubmit="return onSearch(event)">
+      <div class="input" title="Search or paste URL">
+        <input id="q" name="search_query" autocomplete="off" placeholder="Search or paste a URL (press Enter)" />
+      </div>
+
+      <div class="tools">
+        <button type="submit" class="search-btn">Search</button>
+      </div>
+    </form>
+
+    <div class="results" id="results" aria-live="polite">
+      <!-- Example static placeholder results. Your backend should populate /results -->
+      <div class="mini">Cipher Search • results preview</div>
+      <div class="result-item">
+        <h3>Example result title</h3>
+        <p>Short snippet preview of the result. Your search backend will replace these with real results.</p>
+      </div>
+      <div class="result-item">
+        <h3>Another result</h3>
+        <p>More snippet text — friendly and minimal.</p>
+      </div>
+    </div>
+
+    <footer>
+      Built with ❤️ — <strong>Cipher Search</strong>. For best privacy, use the worker proxy option.
+    </footer>
+  </div>
+</main>
+
+<script>
+  // Small UX helpers
+  const serverSelect = document.getElementById('serverSelect');
+  const q = document.getElementById('q');
+
+  function onServerChange(sel){
+    // optional: store selection
+    localStorage.setItem('cipher_server', sel.value);
+  }
+  // restore
+  (function(){
+    const s = localStorage.getItem('cipher_server');
+    if(s) serverSelect.value = s;
+  })();
+
+  function isProbablyUrl(v){
+    return /^[\w-]+:\/\/|^[\w-]+\.[\w.-]+/.test(v);
+  }
+
+  function onSearch(e){
+    e.preventDefault();
+    const val = q.value.trim();
+    if(!val) return false;
+
+    // if user pasted a URL, navigate to it (optionally via proxy)
+    const worker = serverSelect.value;
+    if(isProbablyUrl(val)){
+      const target = val;
+      if(worker){
+        // open via worker proxy in new tab
+        window.location.href = worker + '?url=' + encodeURIComponent(target);
+      } else {
+        window.location.href = target;
+      }
+      return false;
+    }
+
+    // otherwise treat as search query -> submit to /results or proxied results
+    const params = new URLSearchParams({ search_query: val }).toString();
+    if(worker){
+      // if proxy selected: open proxied /results route on your real site (adjust domain if needed)
+      // assumes your site (backend) is accessible at same domain as worker target — change if different
+      const resultsUrl = (window.location.origin) + '/results?' + params;
+      window.location.href = worker + '?url=' + encodeURIComponent(resultsUrl);
+    } else {
+      // normal local results
+      window.location.href = '/results?' + params;
+    }
+    return false;
+  }
+</script>
+</body>
+</html>
